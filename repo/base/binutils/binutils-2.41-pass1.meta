@@ -1,0 +1,42 @@
+package: binutils
+version: 2.41-pass1
+release: 1
+summary: "GNU Binutils (pass 1, bootstrap toolchain)"
+homepage: https://www.gnu.org/software/binutils/
+license: GPL-3.0-or-later
+
+source:
+  url: https://ftp.gnu.org/gnu/binutils/binutils-2.41.tar.xz
+  sha256: 4da94d769f4d4bb3a3e1a3b5c8322c2af9e2bb2e4ddbf1c60fbb0f2b3e5e58a0
+
+depends:
+  build:
+    - gcc
+    - make
+  run: []
+
+variables:
+  PREFIX: "$TOOLCHAIN_ROOT/binutils-pass1"
+  TARGET: "$LFS_TGT"
+  PATH: "$PREFIX/bin:$PATH"
+
+buildsystem: autotools
+
+build:
+  configure: |
+    ../configure \
+      --prefix=$PREFIX \
+      --with-sysroot=$LFS \
+      --target=$TARGET \
+      --disable-nls \
+      --disable-werror
+  compile: |
+    make -j$(nproc)
+  install: |
+    make install
+
+hooks:
+  pre_build:
+    - echo ">>> Iniciando compilação do Binutils (pass1)"
+  post_install:
+    - echo ">>> Binutils (pass1) instalado em $PREFIX"
